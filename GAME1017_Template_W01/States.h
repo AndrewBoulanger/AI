@@ -3,6 +3,9 @@
 #define _STATES_H_
 
 #include <SDL.h>
+#include "Engine.h"
+#include "Button.h"
+#include "Sprite.h"
 
 class State // This is the abstract base class for all specific states.
 {
@@ -16,5 +19,39 @@ public: // Public methods.
 protected: // Private but inherited.
 	State() {}
 };
+
+// state subclasses
+
+class TitleState : public State
+{
+public:
+	TitleState();
+	void Update();
+	void Render();
+	void Enter();
+	void Exit();
+private:
+	Label* name;
+	Button* m_playBtn;
+
+};
+
+// ===================
+
+class GameState : public State
+{
+private:
+
+
+public:
+	GameState();
+
+	void Update();
+	void Render();
+	void Enter();
+	void Exit();
+
+};
+
 
 #endif

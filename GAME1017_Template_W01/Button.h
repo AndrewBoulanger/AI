@@ -20,4 +20,11 @@ protected: // Private but inherited!
 
 // List button subclasses here...
 
+class StartButton : public Button
+{
+private:
+	void Execute();
+public:
+	StartButton(SDL_Rect src, SDL_FRect dst, SDL_Renderer* r, SDL_Texture* t);
+};
 #endif

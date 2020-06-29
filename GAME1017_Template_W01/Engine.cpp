@@ -44,6 +44,7 @@ bool Engine::Init(const char* title, int xpos, int ypos, int width, int height, 
 	srand((unsigned)time(NULL));
 	m_pTileText = IMG_LoadTexture(m_pRenderer, "Img/Tiles.png");
 	m_pPlayerText = IMG_LoadTexture(m_pRenderer, "Img/Maga.png");
+	TEMA::RegisterTexture("Img/start.png", "start");
 	FOMA::RegisterFont("img/ltype.ttf", "tile", 10);
 	m_pPlayer = new Player({ 0,0,32,32 }, { (float)(16) * 32, (float)(12) * 32, 32, 32 }, m_pRenderer, m_pPlayerText, 0, 0, 0, 4);
 	m_pBling = new Sprite({ 224,64,32,32 }, { (float)(16) * 32, (float)(4) * 32, 32, 32 }, m_pRenderer, m_pTileText);
