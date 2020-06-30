@@ -64,8 +64,7 @@ void GameState::Enter()
 	SOMA::PlayMusic("game");
 	m_level = Engine::Instance().GetLevel();
 
-	m_cost = 0;
-	m_costText = new Label("tile", 10, 10, "current cost: " + m_cost);
+	m_costText = new Label("tile", 10, 10, "current cost: " );
 	m_instructions = new Label("tile", 10, 740, "H = debug mode, F = display viable paths, M = move character");
 	m_debugInstruct = new Label("tile", 10, 750, "left click to place player, right click to place the goal");
 }
@@ -109,10 +108,24 @@ void GameState::Update()
 				m_level[row][col]->m_lCost->SetText(std::to_string((int)(m_level[row][col]->Node()->H())).c_str());
 			}
 		}
+		if (EVMA::KeyPressed(SDL_SCANCODE_F))
+		{
+			for (int row = 0; row < ROWS; row++) // "This is where the fun begins."
+			{ // Update each node with the selected heuristic and set the text for debug mode.
+				for (int col = 0; col < COLS; col++)
+					m_level[row][col]->Node()->SetH(PAMA::HManhat(m_level[row][col]->Node(), m_level[(int)(m_pBling->GetDstP()->y / 32)][(int)(m_pBling->GetDstP()->x / 32)]->Node()));
+			}
+		}
+	}
+	if (EVMA::KeyPressed(SDL_SCANCODE_F))
+	{
 		// Now we can calculate the path. Note: I am not returning a path again, only generating one to be rendered.
 		PAMA::GetShortestPath(m_level[(int)(m_pPlayer->GetDstP()->y / 32)][(int)(m_pPlayer->GetDstP()->x / 32)]->Node(),
 			m_level[(int)(m_pBling->GetDstP()->y / 32)][(int)(m_pBling->GetDstP()->x / 32)]->Node());
+		//for (unsigned i = 0; i < m_level[row][col]->Node()->GetConnections().size(); i++)
 	}
+		m_cost = m_level[(int)(m_pPlayer->GetDstP()->y / 32)][(int)(m_pPlayer->GetDstP()->x / 32)]->Node()->H();
+		m_costText->SetText(("current cost: " + std::to_string(m_cost)).c_str());
 }
 
 
@@ -135,8 +148,12 @@ void GameState::Render()
 				// I am also rendering out each connection in blue. If this is a bit much for you, comment out the for loop below.
 				for (unsigned i = 0; i < m_level[row][col]->Node()->GetConnections().size(); i++)
 				{
-					DEMA::QueueLine({ m_level[row][col]->Node()->GetConnections()[i]->GetFromNode()->x + 16, m_level[row][col]->Node()->GetConnections()[i]->GetFromNode()->y + 16 },
-						{ m_level[row][col]->Node()->GetConnections()[i]->GetToNode()->x + 16, m_level[row][col]->Node()->GetConnections()[i]->GetToNode()->y + 16 }, { 0,0,255,255 });
+		/*			DEMA::QueueLine({ m_level[row][col]->Node()->GetConnections()[i]->GetFromNode()->x, m_level[row][col]->Node()->GetConnections()[i]->GetFromNode()->y },
+						{ m_level[row][col]->Node()->GetConnections()[i]->GetToNode()->x, m_level[row][col]->Node()->GetConnections()[i]->GetToNode()->y }, { 0,0,255,255 });
+					DEMA::QueueLine({ m_level[row][col]->Node()->GetConnections()[i]->GetFromNode()->x + 32, m_level[row][col]->Node()->GetConnections()[i]->GetFromNode()->y +32},
+						{ m_level[row][col]->Node()->GetConnections()[i]->GetToNode()->x +32, m_level[row][col]->Node()->GetConnections()[i]->GetToNode()->y +32 }, { 0,0,255,255 });*/
+					DEMA::QueueLine({ m_level[row][col]->Node()->x, m_level[row][col]->Node()->y }, { m_level[row][col]->Node()->x + 32, m_level[row][col]->Node()->y }, { 0,0,255,255 });
+					DEMA::QueueLine({ m_level[row][col]->Node()->x, m_level[row][col]->Node()->y }, { m_level[row][col]->Node()->x , m_level[row][col]->Node()->y +32 }, { 0,0,255,255 });
 				}
 			}
 		}
