@@ -52,7 +52,7 @@ private:
 	bool m_showCosts = false, m_hEuclid = true;
 	Label* m_costText, *m_instructions, *m_debugInstruct;
 	std::string label;
-	double m_cost;
+	int m_cost;
 
 public:
 	GameState();

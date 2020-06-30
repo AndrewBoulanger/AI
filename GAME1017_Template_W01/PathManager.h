@@ -16,6 +16,7 @@ public:
 	static double HEuclid(const PathNode* start, const PathNode* goal);
 	static double HManhat(const PathNode* start, const PathNode* goal);
 	static void DrawPath();
+	static std::vector<PathConnection*> getPath() { return s_path; }
 private:
 	PathManager() {}
 private:
