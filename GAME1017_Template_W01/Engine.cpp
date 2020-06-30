@@ -45,7 +45,9 @@ bool Engine::Init(const char* title, int xpos, int ypos, int width, int height, 
 	TEMA::RegisterTexture("Img/Tiles.png", "tiles");
 	TEMA::RegisterTexture("Img/Maga.png", "player");
 	TEMA::RegisterTexture("Img/start.png", "start");
-	FOMA::RegisterFont("img/ltype.ttf", "tile", 22);
+	FOMA::RegisterFont("img/ltype.ttf", "tile", 10);
+	SOMA::Load("Aud/game.mp3", "game", SOUND_MUSIC);
+	SOMA::SetMusicVolume(15);
 
 	ifstream inFile("Dat/Tiledata.txt");
 	if (inFile.is_open())

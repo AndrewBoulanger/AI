@@ -7,6 +7,7 @@
 #include "EventManager.h"
 #include "PathManager.h"
 #include "DebugManager.h"
+#include "FontManager.h"
 #include <string.h>
 
 // Begin State. CTRL+M+H and CTRL+M+U to turn on/off collapsed code.
@@ -23,8 +24,7 @@ TitleState::TitleState() {}
 void TitleState::Enter()
 {
 	m_playBtn = new StartButton({ 0,0,200,100 }, { 350.0f,400.0f,300.0f,100.0f }, Engine::Instance().GetRenderer(), TEMA::GetTexture("start"));
-
-	name = new Label("tile", 350, 110, "Andrew Boulanger 101292574", { 0,100,200,0 });
+	name = new Label("tile", 350, 650, "Andrew Boulanger 101292574", { 0,100,200,0 });
 }
 
 void TitleState::Update()
@@ -60,22 +60,27 @@ void GameState::Enter()
 
 	m_pPlayer = new Player({ 0,0,32,32 }, { (float)(16) * 32, (float)(12) * 32, 32, 32 }, Engine::Instance().GetRenderer(), TEMA::GetTexture("player"), 0, 0, 0, 4);
 	m_pBling = new Sprite({ 224,64,32,32 }, { (float)(16) * 32, (float)(4) * 32, 32, 32 }, Engine::Instance().GetRenderer(), TEMA::GetTexture("tiles"));
-
-	SOMA::PlayMusic("PokerFace");
+	
+	SOMA::PlayMusic("game");
 	m_level = Engine::Instance().GetLevel();
+
+	m_cost = 0;
+	m_costText = new Label("tile", 10, 10, "current cost: " + m_cost);
+	m_instructions = new Label("tile", 10, 740, "H = debug mode, F = display viable paths, M = move character");
+	m_debugInstruct = new Label("tile", 10, 750, "left click to place player, right click to place the goal");
 }
 
 void GameState::Update()
 {
-	// m_pPlayer->Update(); // Just stops MagaMan from moving.
-	if (EVMA::KeyPressed(SDL_SCANCODE_F)) // ~ or ` key. Toggle debug mode.
+	m_pPlayer->Update(); // Just stops MagaMan from moving.
+	if (EVMA::KeyPressed(SDL_SCANCODE_H)) // h key. Toggle debug mode.
 		m_showCosts = !m_showCosts;
 	if (EVMA::KeyPressed(SDL_SCANCODE_SPACE)) // Toggle the heuristic used for pathfinding.
 	{
 		m_hEuclid = !m_hEuclid;
 		std::cout << "Setting " << (m_hEuclid ? "Euclidian" : "Manhattan") << " heuristic..." << std::endl;
 	}
-	if (EVMA::MousePressed(1) || EVMA::MousePressed(3)) // If user has clicked.
+	if ((EVMA::MousePressed(1) || EVMA::MousePressed(3)) && m_showCosts) // If user has clicked.
 	{
 		int xIdx = (EVMA::GetMousePos().x / 32);
 		int yIdx = (EVMA::GetMousePos().y / 32);
@@ -138,8 +143,13 @@ void GameState::Render()
 	}
 	m_pPlayer->Render();
 	m_pBling->Render();
+	m_costText->Render();
+	m_instructions->Render();
+	if (m_showCosts)
+		m_debugInstruct->Render();
 	PAMA::DrawPath(); // I save the path in a static vector to be drawn here.
 	DEMA::FlushLines(); // And... render ALL the queued lines. Phew.
+
 
 
 	// Draw the platforms.

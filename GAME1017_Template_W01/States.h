@@ -6,6 +6,7 @@
 #include "Engine.h"
 #include "Button.h"
 #include "Sprite.h"
+#include <string.h>
 
 class State // This is the abstract base class for all specific states.
 {
@@ -49,6 +50,9 @@ private:
 	std::array<std::array<Tile*, COLS>, ROWS> m_level; // Fixed-size STL array of Tile pointers.
 
 	bool m_showCosts = false, m_hEuclid = true;
+	Label* m_costText, *m_instructions, *m_debugInstruct;
+	std::string label;
+	int m_cost;
 
 public:
 	GameState();
