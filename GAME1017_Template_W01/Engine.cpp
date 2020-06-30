@@ -42,12 +42,11 @@ bool Engine::Init(const char* title, int xpos, int ypos, int width, int height, 
 	// Example specific initialization.
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2"); // Call this before any textures are created.
 	srand((unsigned)time(NULL));
-	m_pTileText = IMG_LoadTexture(m_pRenderer, "Img/Tiles.png");
-	m_pPlayerText = IMG_LoadTexture(m_pRenderer, "Img/Maga.png");
+	TEMA::RegisterTexture("Img/Tiles.png", "tiles");
+	TEMA::RegisterTexture("Img/Maga.png", "player");
 	TEMA::RegisterTexture("Img/start.png", "start");
 	FOMA::RegisterFont("img/ltype.ttf", "tile", 10);
-	m_pPlayer = new Player({ 0,0,32,32 }, { (float)(16) * 32, (float)(12) * 32, 32, 32 }, m_pRenderer, m_pPlayerText, 0, 0, 0, 4);
-	m_pBling = new Sprite({ 224,64,32,32 }, { (float)(16) * 32, (float)(4) * 32, 32, 32 }, m_pRenderer, m_pTileText);
+
 	ifstream inFile("Dat/Tiledata.txt");
 	if (inFile.is_open())
 	{ // Create map of Tile prototypes.
@@ -57,7 +56,7 @@ bool Engine::Init(const char* title, int xpos, int ypos, int width, int height, 
 		while (!inFile.eof())
 		{
 			inFile >> key >> x >> y >> o >> h;
-			m_tiles.emplace(key, new Tile({ x * 32, y * 32, 32, 32 }, { 0,0,32,32 }, m_pRenderer, m_pTileText, o, h));
+			m_tiles.emplace(key, new Tile({ x * 32, y * 32, 32, 32 }, { 0,0,32,32 }, m_pRenderer, TEMA::GetTexture("tiles"), o, h));
 		}
 	}
 	inFile.close();
@@ -106,6 +105,7 @@ bool Engine::Init(const char* title, int xpos, int ypos, int width, int height, 
 					MAMA::Distance(m_level[row][col]->Node()->x, m_level[row][col + 1]->Node()->x, m_level[row][col]->Node()->y, m_level[row][col + 1]->Node()->y)));
 		}
 	}
+	STMA::ChangeState(new TitleState);
 	// Final engine initialization calls.
 	m_fps = (Uint32)round((1 / (double)FPS) * 1000); // Sets FPS in milliseconds and rounds.
 	m_running = true; // Everything is okay, start the engine.
@@ -133,79 +133,16 @@ void Engine::HandleEvents()
 
 void Engine::Update()
 {
-	// m_pPlayer->Update(); // Just stops MagaMan from moving.
-	if (EVMA::KeyPressed(SDL_SCANCODE_GRAVE)) // ~ or ` key. Toggle debug mode.
-		m_showCosts = !m_showCosts;
-	if (EVMA::KeyPressed(SDL_SCANCODE_SPACE)) // Toggle the heuristic used for pathfinding.
-	{
-		m_hEuclid = !m_hEuclid;
-		std::cout << "Setting " << (m_hEuclid?"Euclidian":"Manhattan") << " heuristic..." << std::endl;
-	}
-	if (EVMA::MousePressed(1) || EVMA::MousePressed(3)) // If user has clicked.
-	{		
-		int xIdx = (EVMA::GetMousePos().x / 32);
-		int yIdx = (EVMA::GetMousePos().y / 32);
-		if (m_level[yIdx][xIdx]->IsObstacle() || m_level[yIdx][xIdx]->IsHazard()) // Node() == nullptr;
-			return; // We clicked on an invalid tile.
-		if (EVMA::MousePressed(1)) // Move the player with left-click.
-		{
-			m_pPlayer->GetDstP()->x = (float)(xIdx * 32);
-			m_pPlayer->GetDstP()->y = (float)(yIdx * 32);
-		}
-		else if (EVMA::MousePressed(3)) // Else move the bling with right-click.
-		{
-			m_pBling->GetDstP()->x = (float)(xIdx * 32);
-			m_pBling->GetDstP()->y = (float)(yIdx * 32);
-		}
-		for (int row = 0; row < ROWS; row++) // "This is where the fun begins."
-		{ // Update each node with the selected heuristic and set the text for debug mode.
-			for (int col = 0; col < COLS; col++)
-			{
-				if (m_level[row][col]->Node() == nullptr)
-					continue;
-				if (m_hEuclid)
-					m_level[row][col]->Node()->SetH(PAMA::HEuclid(m_level[row][col]->Node(), m_level[(int)(m_pBling->GetDstP()->y / 32)][(int)(m_pBling->GetDstP()->x / 32)]->Node()));
-				else
-					m_level[row][col]->Node()->SetH(PAMA::HManhat(m_level[row][col]->Node(), m_level[(int)(m_pBling->GetDstP()->y / 32)][(int)(m_pBling->GetDstP()->x / 32)]->Node()));
-				m_level[row][col]->m_lCost->SetText(to_string((int)(m_level[row][col]->Node()->H())).c_str());
-			}
-		}
-		// Now we can calculate the path. Note: I am not returning a path again, only generating one to be rendered.
-		PAMA::GetShortestPath(m_level[(int)(m_pPlayer->GetDstP()->y / 32)][(int)(m_pPlayer->GetDstP()->x / 32)]->Node(), 
-			m_level[(int)(m_pBling->GetDstP()->y / 32)][(int)(m_pBling->GetDstP()->x / 32)]->Node());
-	}
+	STMA::Update();
+	
 }
 
 void Engine::Render() 
 {
 	SDL_SetRenderDrawColor(m_pRenderer, 0, 0, 0, 255);
 	SDL_RenderClear(m_pRenderer); // Clear the screen with the draw color.
-	// Draw anew.
-	for (int row = 0; row < ROWS; row++)
-	{
-		for (int col = 0; col < COLS; col++)
-		{
-			m_level[row][col]->Render(); // Render each tile.
-			// Render the debug data...
-			if (m_showCosts && m_level[row][col]->Node() != nullptr)
-			{
-				m_level[row][col]->m_lCost->Render();
-				m_level[row][col]->m_lX->Render();
-				m_level[row][col]->m_lY->Render();
-				// I am also rendering out each connection in blue. If this is a bit much for you, comment out the for loop below.
-				for (unsigned i = 0; i < m_level[row][col]->Node()->GetConnections().size(); i++)
-				{
-					DEMA::QueueLine({ m_level[row][col]->Node()->GetConnections()[i]->GetFromNode()->x + 16, m_level[row][col]->Node()->GetConnections()[i]->GetFromNode()->y + 16 },
-						{ m_level[row][col]->Node()->GetConnections()[i]->GetToNode()->x + 16, m_level[row][col]->Node()->GetConnections()[i]->GetToNode()->y + 16 }, { 0,0,255,255 });
-				}
-			}
-			
-		}
-	}
-	m_pPlayer->Render();
-	m_pBling->Render();
-	PAMA::DrawPath(); // I save the path in a static vector to be drawn here.
-	DEMA::FlushLines(); // And... render ALL the queued lines. Phew.
+
+	STMA::Render();
 	// Flip buffers.
 	SDL_RenderPresent(m_pRenderer);
 }
