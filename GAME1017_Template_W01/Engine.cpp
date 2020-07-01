@@ -48,6 +48,7 @@ bool Engine::Init(const char* title, int xpos, int ypos, int width, int height, 
 	FOMA::RegisterFont("img/ltype.ttf", "tile", 10);
 	SOMA::Load("Aud/game.mp3", "game", SOUND_MUSIC);
 	SOMA::SetMusicVolume(15);
+	SOMA::Load("Aud/laser.wav", "laser", SOUND_SFX);
 
 	ifstream inFile("Dat/Tiledata.txt");
 	if (inFile.is_open())

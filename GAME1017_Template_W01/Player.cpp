@@ -2,14 +2,14 @@
 #include "CollisionManager.h"
 #include "EventManager.h"
 #include "DebugManager.h"
+#include "SoundManager.h"
 #define SPEED 2
 
 Player::Player(SDL_Rect s, SDL_FRect d, SDL_Renderer* r, SDL_Texture* t, int sstart, int smin, int smax, int nf)
 	:AnimatedSprite(s, d, r, t, sstart, smin, smax, nf), m_state(idle), m_dir(0)
 {
-	m_dX = m_dY = m_vel = 0.0;
-	m_accel = 1;
-	m_velMax = 5.0;
+	m_dX = m_dY = 0.0;
+	m_speed = 2;
 }
 
 void Player::Update()
@@ -31,8 +31,11 @@ void Player::Update()
 		if (MAMA::Distance((GetDstP()->x + GetDstP()->w / 2.0f), (m_nodes[trgt]->GetToNode()->x + 16.0),
 			(GetDstP()->y + GetDstP()->h / 2.0f), (m_nodes[trgt]->GetToNode()->y + 16.0f)) <= 5.0)
 		{
-			if (trgt == m_nodes.size() - 1)
+			if (trgt == m_nodes.size()-1)
+			{
+				SOMA::PlaySound("laser", 0, 0);
 				SetState(idle);
+			}
 			else
 			{
 				Stop();
@@ -88,8 +91,8 @@ void Player::Update()
 		break;
 	}
 	Animate();
-	m_dst.x += m_dX;
-	m_dst.y += m_dY;
+	m_dst.x += m_dX * m_speed;
+	m_dst.y += m_dY * m_speed;
 }
 
 void Player::Render()
@@ -137,7 +140,6 @@ void Player::Stop()
 {
 	m_dX = 0;
 	m_dY = 0;
-	m_vel = 0;
 }
 
 void Player::setTargetPath(std::vector<PathConnection*> nodes)
