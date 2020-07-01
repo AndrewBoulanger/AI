@@ -45,8 +45,6 @@ private:
 	Player* m_pPlayer;
 	Sprite* m_pBling;
 
-	SDL_Texture* m_pTileText, * m_pPlayerText, * m_pButtonText;
-	std::map<char, Tile*> m_tiles;
 	std::array<std::array<Tile*, COLS>, ROWS> m_level; // Fixed-size STL array of Tile pointers.
 
 	bool m_showCosts = false, m_hEuclid = true;

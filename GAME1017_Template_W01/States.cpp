@@ -74,11 +74,7 @@ void GameState::Update()
 	m_pPlayer->Update(); // Just stops MagaMan from moving.
 	if (EVMA::KeyPressed(SDL_SCANCODE_H)) // h key. Toggle debug mode.
 		m_showCosts = !m_showCosts;
-	if (EVMA::KeyPressed(SDL_SCANCODE_SPACE)) // Toggle the heuristic used for pathfinding.
-	{
-		m_hEuclid = !m_hEuclid;
-		std::cout << "Setting " << (m_hEuclid ? "Euclidian" : "Manhattan") << " heuristic..." << std::endl;
-	}
+	
 	if ((EVMA::MousePressed(1) || EVMA::MousePressed(3)) && m_showCosts) // If user has clicked.
 	{
 		m_pPlayer->SetState(0); //idle state
@@ -86,12 +82,12 @@ void GameState::Update()
 		int yIdx = (EVMA::GetMousePos().y / 32);
 		if (m_level[yIdx][xIdx]->IsObstacle() || m_level[yIdx][xIdx]->IsHazard()) // Node() == nullptr;
 			return; // We clicked on an invalid tile.
-		if (EVMA::MousePressed(1)) // Move the player with left-click.
+		if (EVMA::MousePressed(1) && m_level[yIdx][xIdx] != m_level[(int)m_pBling->GetDstP()->y / 32][(int)m_pBling->GetDstP()->x / 32]) // Move the player with left-click.
 		{
 			m_pPlayer->GetDstP()->x = (float)(xIdx * 32);
 			m_pPlayer->GetDstP()->y = (float)(yIdx * 32);
 		}
-		else if (EVMA::MousePressed(3)) // Else move the bling with right-click.
+		else if (EVMA::MousePressed(3) && m_level[yIdx][xIdx] != m_level[(int)m_pPlayer->GetDstP()->y / 32][(int)m_pPlayer->GetDstP()->x / 32]) // Else move the bling with right-click.
 		{
 			m_pBling->GetDstP()->x = (float)(xIdx * 32);
 			m_pBling->GetDstP()->y = (float)(yIdx * 32);
@@ -102,10 +98,8 @@ void GameState::Update()
 			{
 				if (m_level[row][col]->Node() == nullptr)
 					continue;
-				if (m_hEuclid)
-					m_level[row][col]->Node()->SetH(PAMA::HEuclid(m_level[row][col]->Node(), m_level[(int)(m_pBling->GetDstP()->y / 32)][(int)(m_pBling->GetDstP()->x / 32)]->Node()));
-				else
-					m_level[row][col]->Node()->SetH(PAMA::HManhat(m_level[row][col]->Node(), m_level[(int)(m_pBling->GetDstP()->y / 32)][(int)(m_pBling->GetDstP()->x / 32)]->Node()));
+		
+				m_level[row][col]->Node()->SetH(PAMA::HManhat(m_level[row][col]->Node(), m_level[(int)(m_pBling->GetDstP()->y / 32)][(int)(m_pBling->GetDstP()->x / 32)]->Node()));
 				m_level[row][col]->m_lCost->SetText(std::to_string((int)(m_level[row][col]->Node()->H())).c_str());
 			}
 		}
@@ -117,8 +111,9 @@ void GameState::Update()
 		// Now we can calculate the path. Note: I am not returning a path again, only generating one to be rendered.
 		PAMA::GetShortestPath(m_level[(int)(m_pPlayer->GetDstP()->y / 32)][(int)(m_pPlayer->GetDstP()->x / 32)]->Node(),
 			m_level[(int)(m_pBling->GetDstP()->y / 32)][(int)(m_pBling->GetDstP()->x / 32)]->Node());
-		//for (unsigned i = 0; i < m_level[row][col]->Node()->GetConnections().size(); i++)
+		
 		m_pPlayer->SetState(0); //idle state
+
 	}
 	if (EVMA::KeyPressed(SDL_SCANCODE_M))
 	{
