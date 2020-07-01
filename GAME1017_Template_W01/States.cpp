@@ -81,6 +81,7 @@ void GameState::Update()
 	}
 	if ((EVMA::MousePressed(1) || EVMA::MousePressed(3)) && m_showCosts) // If user has clicked.
 	{
+		m_pPlayer->SetState(0); //idle state
 		int xIdx = (EVMA::GetMousePos().x / 32);
 		int yIdx = (EVMA::GetMousePos().y / 32);
 		if (m_level[yIdx][xIdx]->IsObstacle() || m_level[yIdx][xIdx]->IsHazard()) // Node() == nullptr;
@@ -117,7 +118,14 @@ void GameState::Update()
 		PAMA::GetShortestPath(m_level[(int)(m_pPlayer->GetDstP()->y / 32)][(int)(m_pPlayer->GetDstP()->x / 32)]->Node(),
 			m_level[(int)(m_pBling->GetDstP()->y / 32)][(int)(m_pBling->GetDstP()->x / 32)]->Node());
 		//for (unsigned i = 0; i < m_level[row][col]->Node()->GetConnections().size(); i++)
+		m_pPlayer->SetState(0); //idle state
 	}
+	if (EVMA::KeyPressed(SDL_SCANCODE_M))
+	{
+		m_pPlayer->setTargetPath(PAMA::getPath());
+		m_pPlayer->SetState(2); //arrive state
+	}
+
 	m_cost = 0;
 	for (int i = 0; i < PAMA::getPath().size(); i++)
 	{
