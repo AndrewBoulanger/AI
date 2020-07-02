@@ -74,7 +74,7 @@ void GameState::Update()
 	m_pPlayer->Update(); // Just stops MagaMan from moving.
 	if (EVMA::KeyPressed(SDL_SCANCODE_H)) // h key. Toggle debug mode.
 		m_showCosts = !m_showCosts;
-	
+
 	if ((EVMA::MousePressed(1) || EVMA::MousePressed(3)) && m_showCosts) // If user has clicked.
 	{
 		m_pPlayer->SetState(0); //idle state
@@ -98,7 +98,7 @@ void GameState::Update()
 			{
 				if (m_level[row][col]->Node() == nullptr)
 					continue;
-		
+				
 				m_level[row][col]->Node()->SetH(PAMA::HManhat(m_level[row][col]->Node(), m_level[(int)(m_pBling->GetDstP()->y / 32)][(int)(m_pBling->GetDstP()->x / 32)]->Node()));
 				m_level[row][col]->m_lCost->SetText(std::to_string((int)(m_level[row][col]->Node()->H())).c_str());
 			}
@@ -121,13 +121,8 @@ void GameState::Update()
 		m_pPlayer->SetState(2); //arrive state
 	}
 
-	m_cost = 0;
-	for (int i = 0; i < PAMA::getPath().size(); i++)
-	{
-		m_cost += PAMA::getPath().at(i)->GetCost();
+		m_cost = PAMA::PathCost();
 	
-	}
-	//	m_cost = m_level[(int)(m_pPlayer->GetDstP()->y / 32)][(int)(m_pPlayer->GetDstP()->x / 32)]->Node()->H();
 		m_costText->SetText(("current cost: " + std::to_string(m_cost)).c_str());
 }
 

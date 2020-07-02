@@ -60,6 +60,7 @@ void PathManager::GetShortestPath(PathNode* start, PathNode* goal)
 		s_closed.push_back(currentRecord);
 		// std::cout << "Open size: " << s_open.size() << std::endl;
 	}
+	goalNodeCost = currentRecord->m_totalCost;
 	// std::cout << "Done while loop, open size:" << s_open.size() << std::endl;
 	if (currentRecord->m_node != goal)
 	{
@@ -74,6 +75,7 @@ void PathManager::GetShortestPath(PathNode* start, PathNode* goal)
 			s_path.push_back(currentRecord->m_connection);
 			currentRecord = currentRecord->m_fromRecord;
 		}
+	
 		std::reverse(s_path.begin(), s_path.end());
 	}
 	// Clean up lists. Uncomment the cout below to see how many records we have to clean up.
@@ -163,3 +165,5 @@ std::vector<NodeRecord*> PathManager::s_closed;
 
 // Returned path to go here?
 std::vector<PathConnection*> PathManager::s_path;
+
+int PathManager::goalNodeCost;
