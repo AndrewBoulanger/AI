@@ -9,7 +9,7 @@ Player::Player(SDL_Rect s, SDL_FRect d, SDL_Renderer* r, SDL_Texture* t, int sst
 	:AnimatedSprite(s, d, r, t, sstart, smin, smax, nf), m_state(idle), m_dir(0)
 {
 	m_dX = m_dY = 0.0;
-	m_speed = 2;
+
 }
 
 void Player::Update()
@@ -28,24 +28,24 @@ void Player::Update()
 	case arrive:
 	{
 
-		if (MAMA::Distance((GetDstP()->x + GetDstP()->w / 2.0f), (m_nodes[trgt]->GetToNode()->x + 16.0),
-			(GetDstP()->y + GetDstP()->h / 2.0f), (m_nodes[trgt]->GetToNode()->y + 16.0f)) <= 5.0)
+		if (MAMA::Distance((GetDstP()->x + GetDstP()->w / 2.0f), (m_nodes[targetIndex]->GetToNode()->x + 16.0),
+			(GetDstP()->y + GetDstP()->h / 2.0f), (m_nodes[targetIndex]->GetToNode()->y + 16.0f)) <= 5.0)
 		{
-			if (trgt == m_nodes.size()-1)
+			if (targetIndex == m_nodes.size()-1)
 			{
 				SOMA::PlaySound("laser", 0, 0);
 				SetState(idle);
 			}
 			else
 			{
-				Stop();
-				trgt++;
+				//Stop();
+				targetIndex++;
 			}
 		}
 		else
 		{
-			double destAngle = MAMA::AngleBetweenPoints((m_nodes[trgt]->GetToNode()->y + 16.0f) - (GetDstP()->y + GetDstP()->h / 2.0f),
-				(m_nodes[trgt]->GetToNode()->x + 16.0f) - (GetDstP()->x + GetDstP()->w / 2.0f));
+			double destAngle = MAMA::AngleBetweenPoints((m_nodes[targetIndex]->GetToNode()->y + 16.0f) - (GetDstP()->y + GetDstP()->h / 2.0f),
+				(m_nodes[targetIndex]->GetToNode()->x + 16.0f) - (GetDstP()->x + GetDstP()->w / 2.0f));
 			Move2Stop(MAMA::Rad2Deg(destAngle));
 		}
 
@@ -91,8 +91,8 @@ void Player::Update()
 		break;
 	}
 	Animate();
-	m_dst.x += m_dX * m_speed;
-	m_dst.y += m_dY * m_speed;
+	m_dst.x += m_dX * SPEED;
+	m_dst.y += m_dY * SPEED;
 }
 
 void Player::Render()
@@ -147,7 +147,7 @@ void Player::setTargetPath(std::vector<PathConnection*> nodes)
 	if (nodes.size() != 0)
 	{
 		m_nodes = nodes;
-		trgt = 0;
+		targetIndex = 0;
 	}
 }
 

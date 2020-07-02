@@ -146,10 +146,7 @@ void GameState::Render()
 				// I am also rendering out each connection in blue. If this is a bit much for you, comment out the for loop below.
 				for (unsigned i = 0; i < m_level[row][col]->Node()->GetConnections().size(); i++)
 				{
-		/*			DEMA::QueueLine({ m_level[row][col]->Node()->GetConnections()[i]->GetFromNode()->x, m_level[row][col]->Node()->GetConnections()[i]->GetFromNode()->y },
-						{ m_level[row][col]->Node()->GetConnections()[i]->GetToNode()->x, m_level[row][col]->Node()->GetConnections()[i]->GetToNode()->y }, { 0,0,255,255 });
-					DEMA::QueueLine({ m_level[row][col]->Node()->GetConnections()[i]->GetFromNode()->x + 32, m_level[row][col]->Node()->GetConnections()[i]->GetFromNode()->y +32},
-						{ m_level[row][col]->Node()->GetConnections()[i]->GetToNode()->x +32, m_level[row][col]->Node()->GetConnections()[i]->GetToNode()->y +32 }, { 0,0,255,255 });*/
+
 					DEMA::QueueLine({ m_level[row][col]->Node()->x, m_level[row][col]->Node()->y }, { m_level[row][col]->Node()->x + 32, m_level[row][col]->Node()->y }, { 0,0,255,255 });
 					DEMA::QueueLine({ m_level[row][col]->Node()->x, m_level[row][col]->Node()->y }, { m_level[row][col]->Node()->x , m_level[row][col]->Node()->y +32 }, { 0,0,255,255 });
 				}
@@ -166,9 +163,6 @@ void GameState::Render()
 	DEMA::FlushLines(); // And... render ALL the queued lines. Phew.
 
 
-
-	// Draw the platforms.
-	SDL_SetRenderDrawColor(Engine::Instance().GetRenderer(), 70, 192, 0, 255);
 
 	// If GameState != current state.
 	if (dynamic_cast<GameState*>(STMA::GetStates().back()))

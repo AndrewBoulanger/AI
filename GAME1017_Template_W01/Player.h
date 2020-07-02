@@ -21,7 +21,7 @@ private:
 	bool m_dir;
 	std::vector<PathConnection*> m_nodes;
 	double m_dX, m_dY, m_speed;
-	int trgt;
+	int targetIndex;
 };
 
 #endif
