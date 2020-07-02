@@ -98,8 +98,8 @@ void Player::Update()
 void Player::Render()
 {
 	SDL_RenderCopyExF(m_pRend, m_pText, GetSrcP(), GetDstP(), m_angle, 0, static_cast<SDL_RendererFlip>(m_dir));
-	if(m_nodes.size() != 0)
-	DEMA::DrawLine({ (int)m_dst.x, (int)m_dst.y }, { (int)m_nodes.at(targetIndex)->GetToNode()->x, (int)m_nodes.at(targetIndex)->GetToNode()->y }, { 0,0,0,0 });
+	/*if(m_nodes.size() != 0)
+	DEMA::DrawLine({ (int)m_dst.x, (int)m_dst.y }, { (int)m_nodes.at(targetIndex)->GetToNode()->x, (int)m_nodes.at(targetIndex)->GetToNode()->y }, { 0,0,0,0 });*/
 }
 
 void Player::SetState(int s)
